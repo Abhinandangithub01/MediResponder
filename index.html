@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>MediResponder</title>
+  <link rel="stylesheet" href="style.css" />
+  <script src="script.js" defer></script>
+</head>
+<body>
+
+  <!-- Main container holding the app UI -->
+  <div class="container">
+
+    <!-- App Header -->
+    <div class="app-header">
+      <h1>MediResponder</h1>
+      <p>Emergency Medical Assistant</p>
+    </div>
+
+    <!-- Agent 2 Panel - Simulating communication with 911 -->
+    <div class="panel agent2">
+      <div class="header">🚨 911 Communication</div>
+      <div class="chat-area" id="agent2-chat">
+        <div class="message agent">Calling 911…</div>
+      </div>
+    </div>
+
+    <!-- Agent 1 Panel - Where user talks to AI assistant -->
+    <div class="panel agent1">
+      <div class="header">🗣️ Talk to Assistant</div>
+      <div class="chat-area" id="agent1-chat">
+        <div class="message user">I need help! My friend fainted!</div>
+        <!-- Typing animation will show when AI is responding -->
+        <div class="message agent typing" id="typing-indicator">
+          <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+        </div>
+      </div>
+
+      <!-- Mic button for voice input -->
+      <div class="mic-control">
+        <div class="mic-button pulse" id="mic-button"></div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- JavaScript for voice input, bot reply simulation, and animations -->
+  <script>
+    const micButton = document.getElementById("mic-button");
+    const agent1Chat = document.getElementById("agent1-chat");
+    const agent2Chat = document.getElementById("agent2-chat");
+    const typingIndicator = document.getElementById("typing-indicator");
+
+    // Setup Speech Recognition
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    const recognition = new SpeechRecognition();
+    recognition.lang = "en-US";
+    recognition.interimResults = false;
+    recognition.maxAlternatives = 1;
+
+    // Triggered when mic button is clicked
+    micButton.addEventListener("click", () => {
+      recognition.start();
+    });
+
+    // When speech is recognized
+    recognition.addEventListener("result", (event) => {
+      const transcript = event.results[0][0].transcript;
+
+      // Add user message to chat
+      addMessage("user", transcript, agent1Chat);
+
+      // Show typing animation
+      typingIndicator.style.display = "flex";
+
+      // Simulate AI assistant reply after delay
+      setTimeout(() => {
+        typingIndicator.style.display = "none";
+        const reply = generateAssistantReply(transcript);
+        addMessage("agent", reply, agent1Chat);
+
+        // Also simulate sending some summary to 911
+        simulateAgent2Reply(transcript);
+      }, 1500);
+    });
+
+    // Helper to create and append message bubbles
+    function addMessage(sender, text, container) {
+      const msg = document.createElement("div");
+      msg.className = `message ${sender}`;
+      msg.textContent = text;
+      container.appendChild(msg);
+      container.scrollTop = container.scrollHeight; // Scroll to bottom
+    }
+
+    // Simulated AI assistant logic
+    function generateAssistantReply(userText) {
+      if (userText.toLowerCase().includes("fainted")) {
+        return "Stay calm. Check if your friend is breathing and lay them on their back. I’m contacting emergency services.";
+      } else if (userText.toLowerCase().includes("bleeding")) {
+        return "Apply pressure to the wound using a clean cloth. I’m notifying emergency help.";
+      } else {
+        return "Help is on the way. Please remain calm and describe the emergency.";
+      }
+    }
+
+    // Simulated Agent 2 (911) response
+    function simulateAgent2Reply(userText) {
+      setTimeout(() => {
+        addMessage("agent", "911: Emergency team dispatched to your location.", agent2Chat);
+      }, 2000);
+    }
+  </script>
+</body>
+</html>
