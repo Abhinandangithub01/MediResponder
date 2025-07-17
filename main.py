@@ -17,6 +17,10 @@ async def root():
     return {"message": "MediResponder backend running!"}
 
 # Add a route to test if AssemblyAI integration works
-@app.get("/check-assembly")
-async def check_assembly():
-    return {"status": "Ready for AssemblyAI integration"}
+@app.post("/process")
+async def process_message(request: Request):
+    data = await request.json()
+    user_msg = data.get("message", "")
+    
+    # Simulate response (you'll connect this to AssemblyAI later)
+    return {"reply": f"Emergency noted: '{user_msg}'. Help is being arranged!"}
