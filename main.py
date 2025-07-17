@@ -4,7 +4,7 @@ from pydantic import BaseModel
 
 app = FastAPI()
 
-# Allow frontend to call backend
+# Allow frontend access
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -19,12 +19,7 @@ class MessageRequest(BaseModel):
 def read_root():
     return {"message": "MediResponder backend running!"}
 
-# ✅ Correct POST route to handle messages
 @app.post("/process")
 async def process_message(request: MessageRequest):
     user_message = request.message
-
-    # Simulate a response for now
-    response_text = "Got it! Help is on the way 🚑"
-
-    return {"reply": response_text}
+    return {"reply": f"Received: {user_message}. Help is on the way! 🚑"}
