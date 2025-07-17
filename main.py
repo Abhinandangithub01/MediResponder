@@ -1,26 +1,30 @@
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
+from pydantic import BaseModel
 
 app = FastAPI()
 
-# CORS settings to allow frontend to call the backend
+# Allow frontend to call backend
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # In production, restrict this to your frontend domain
-    allow_credentials=True,
+    allow_origins=["*"],
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
+class MessageRequest(BaseModel):
+    message: str
+
 @app.get("/")
-async def root():
+def read_root():
     return {"message": "MediResponder backend running!"}
 
-# Add a route to test if AssemblyAI integration works
+# ✅ Correct POST route to handle messages
 @app.post("/process")
-async def process_message(request: Request):
-    data = await request.json()
-    user_msg = data.get("message", "")
-    
-    # Simulate response (you'll connect this to AssemblyAI later)
-    return {"reply": f"Emergency noted: '{user_msg}'. Help is being arranged!"}
+async def process_message(request: MessageRequest):
+    user_message = request.message
+
+    # Simulate a response for now
+    response_text = "Got it! Help is on the way 🚑"
+
+    return {"reply": response_text}
